@@ -1,0 +1,15 @@
+<export>
+</export>
+<library   name="CMSOpenAnalysis_plugins" file="*.cc">
+  <use   name="FWCore/Framework"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name ="DataFormats/VertexReco"/>
+  <use   name ="DataFormats/PatCandidates"/>
+  <use   name="HLTrigger/HLTcore"/>
+  <use   name="FWCore/MessageLogger"/>
+  <use   name="FWCore/MessageService"/>
+  <use   name="FWCore/ServiceRegistry"/>
+  <use   name="FWCore/Utilities"/>
+  <use   name="DataFormats/Common"/>
+  <use   name="DataFormats/TrackReco"/>
+</library>
