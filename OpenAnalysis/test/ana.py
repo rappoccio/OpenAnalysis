@@ -73,6 +73,14 @@ from TrigHelper import TrigHelper
 
 trigHelper = TrigHelper()
 
+# Setup fastjet stuff from spartyjet
+import spartyjet as sj
+
+name = 'AntiKt5'
+alg = sj.fj.antikt_algorithm
+R = 0.5
+findJetAreas = False
+jetFinder = sj.SJ.FastJet.FastJetFinder( name, alg, R , findJetAreas )
 
 
 #############################
@@ -141,30 +149,27 @@ h_m    = ROOT.TH1F('h_m', ';Mass (GeV);Number', 25, 0, 50)
 ############################################
 
 jecStr = [
-    'Jec11_V3_L1FastJet_AK5PFchs.txt',
-    'Jec11_V3_L2Relative_AK5PFchs.txt',
-    'Jec11_V3_L3Absolute_AK5PFchs.txt',
-    'Jec11_V3_L2L3Residual_AK5PFchs.txt'
+    'JECFiles/GR_R_42_V24_AK5PF_L1FastJet.txt',
+    'JECFiles/GR_R_42_V24_AK5PF_L2Relative.txt',
+    'JECFiles/GR_R_42_V24_AK5PF_L3Absolute.txt',
+    'JECFiles/GR_R_42_V24_AK5PF_L2L3Residual.txt'
     ]
-jecUncStr = ROOT.std.string('Jec11_V3_Uncertainty_AK5PFchs.txt')
+jecUncStr = ROOT.std.string('JECFiles/GR_R_42_V24_AK5PF_Uncertainty.txt')
 
+jecPars = ROOT.std.vector(ROOT.JetCorrectorParameters)()
 
-
-#jecPars = ROOT.std.vector(ROOT.JetCorrectorParameters)()
-
-#for ijecStr in jecStr :
-#    ijec = ROOT.JetCorrectorParameters( ijecStr )
-#    jecPars.push_back( ijec )
+for ijecStr in jecStr :
+    ijec = ROOT.JetCorrectorParameters( ijecStr )
+    jecPars.push_back( ijec )
     
+jec = ROOT.FactorizedJetCorrector(jecPars)
 
-#jec = ROOT.FactorizedJetCorrector(jecPars)
-
-#if options.jecUnc is not None:
-#    jecUnc = ROOT.JetCorrectionUncertainty( jecUncStr )
-#    upOrDown = options.jecUnc > 0.0
-#else :
-#    jecUnc = None
-#    upOrDown = None
+if options.jecUnc is not None:
+    jecUnc = ROOT.JetCorrectionUncertainty( jecUncStr )
+    upOrDown = options.jecUnc > 0.0
+else :
+    jecUnc = None
+    upOrDown = None
 
 
 
@@ -180,6 +185,15 @@ ak5PFJetsPzHandle = Handle( "std::vector<float>" )
 ak5PFJetsPzLabel = ("ak5Lite", "pz")
 ak5PFJetsEnergyHandle = Handle( "std::vector<float>" )
 ak5PFJetsEnergyLabel = ("ak5Lite", "energy")
+
+pfPxHandle = Handle( "std::vector<float>" )
+pfPxLabel = ("pfLite", "px")
+pfPyHandle = Handle( "std::vector<float>" )
+pfPyLabel = ("pfLite", "py")
+pfPzHandle = Handle( "std::vector<float>" )
+pfPzLabel = ("pfLite", "pz")
+pfEnergyHandle = Handle( "std::vector<float>" )
+pfEnergyLabel = ("pfLite", "energy")
 
 
 
@@ -280,29 +294,50 @@ for ifile in files :
             print 'event passed : index = {0:6.0f} prescale = {1:6.0f}, nvtx = {2:6.0f}, rho = {3:6.2f}'.format( iTrigHist, prescale, nvtx, rho  )
 
 
-##         event.getByLabel( pfPxLabel, pfPxHandle )
-##         event.getByLabel( pfPyLabel, pfPyHandle )
-##         event.getByLabel( pfPzLabel, pfPzHandle )
-##         event.getByLabel( pfEnergyLabel, pfEnergyHandle )
+        #pfPseudoJets = sj.SJ.JetCollection()
 
-##         ak5Pxs = pfPxHandle.product()
-##         ak5Pys = pfPyHandle.product()
-##         ak5Pzs = pfPzHandle.product()
-##         ak5Energys = pfEnergyHandle.product()        
+        event.getByLabel( pfPxLabel, pfPxHandle )
+        event.getByLabel( pfPyLabel, pfPyHandle )
+        event.getByLabel( pfPzLabel, pfPzHandle )
+        event.getByLabel( pfEnergyLabel, pfEnergyHandle )
 
-##         for ijet in xrange( len( ak5Pxs) ) :
-##             ak5Px = ak5Pxs[ijet]
-##             ak5Py = ak5Pys[ijet]
-##             ak5Pz = ak5Pzs[ijet]
-##             ak5E  = ak5Energys[ijet]
-##             jet = ROOT.TLorentzVector( ak5Px, ak5Py, ak5Pz, ak5E )
+        pfPxs = pfPxHandle.product()
+        pfPys = pfPyHandle.product()
+        pfPzs = pfPzHandle.product()
+        pfEnergys = pfEnergyHandle.product()        
 
-##             print 'ijet = {0:6.0f} : pt={1:6.2f},y={2:6.2f},phi={3:6.2f},m={4:6.2f}'.format( ijet, jet.Perp(), jet.Rapidity(), jet.Phi(), jet.Mass() )
+        for ijet in xrange( len( pfPxs) ) :
+            pfPx = pfPxs[ijet]
+            pfPy = pfPys[ijet]
+            pfPz = pfPzs[ijet]
+            pfE  = pfEnergys[ijet]
+            ipf =  sj.SJ.Jet( pfPx, pfPy, pfPz, pfE, ijet )
+            #pfPseudoJets.push_back( ipf )
+
+            if options.verbose : 
+                print 'ipf  = {0:6.0f} : pt={1:6.2f},y={2:6.2f},phi={3:6.2f},m={4:6.2f}'.format( ijet, jet.pt(), jet.rap(), jet.phi(), jet.m() )
+
+        
+        
+        reclusteredAK5Jets = jetFinder.execute( pfPseudoJets )
+
+        for ijet,jet in enumerate(reclusteredAK5Jets) :
+            if options.verbose :
+                print 'ijet = {0:6.0f} : pt={1:6.2f},y={2:6.2f},phi={3:6.2f},m={4:6.2f}'.format( ijet, jet.pt(), jet.rap(), jet.phi(), jet.m() )
 
 
 
+            # Apply new JEC's
+            jec.setJetEta( jet.eta() )
+            jec.setJetPt ( jet.pt() )
+            jec.setJetE  ( jet.energy() )
+            jec.setJetA  ( jet.area() )
+            jec.setRho   ( rho )
+            jec.setNPV   ( NPV )            
+            corr = jec.getCorrection()
+
+            # Now multiply the 4-vector of the jet by "corr"
             
-
 
 f.cd()    
 f.Write()
