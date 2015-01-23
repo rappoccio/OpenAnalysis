@@ -134,6 +134,16 @@ process.dijetTriggerFilter = cms.EDFilter(
     )
 
 
+
+process.npv = cms.EDFilter("VertexCountFilter",
+                           src = cms.InputTag("goodOfflinePrimaryVertices")
+                           )
+                           
+process.pvCount = cms.EDFilter("EDPileupAna",
+                               src = cms.InputTag("goodOfflinePrimaryVertices")
+                               )
+                               
+
 # Write out the ntuples of the jets and other relevant info
 process.pfLite = cms.EDProducer(
     "CandViewNtpProducer", 
@@ -249,6 +259,7 @@ process.p = cms.Path(
     process.HBHENoiseFilter*
     process.goodOfflinePrimaryVertices*
     process.primaryVertexFilter*
+    process.pvCount*
     process.ak8PFJets*
     process.patDefaultSequence*
     process.patTriggerDefaultSequence*
@@ -292,8 +303,11 @@ process.source.fileNames = [          ##
 process.maxEvents.input = 1000              ##  (e.g. -1 to run on all events)
 #                                         ##
 
-process.out.outputCommands = [ 'keep *_*Lite*_*_PAT',
-                               'keep *_dijetTriggerFilter_*_*'
+process.out.outputCommands = [
+    'keep double_kt6PFJets_rho_*',
+    'keep *_pvCount_*_*',
+    'keep *_*Lite*_*_PAT',
+    'keep *_dijetTriggerFilter_*_*',
                                ]
 #   process.out.outputCommands = [ ... ]  ##  (e.g. taken from PhysicsTools/PatAlgos/python/patEventContent_cff.py)
 #                                         ##
