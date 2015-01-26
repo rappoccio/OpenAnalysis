@@ -57,6 +57,9 @@ process.goodOfflinePrimaryVertices = cms.EDFilter(
     )
 
 
+###############################
+####### Jets         ##########
+###############################
 
 # Generator-level jets (MC only, of course)
 process.load("RecoJets.Configuration.GenJetParticles_cff")
@@ -104,6 +107,11 @@ process.patJetCorrFactors.primaryVertices = "goodOfflinePrimaryVertices"
 process.patJetCorrFactorsAK8PF.primaryVertices = "goodOfflinePrimaryVertices"
 
 
+
+###############################
+####### Trigger      ##########
+###############################
+
 # run the trigger on the fly
 process.load('PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cff')
 
@@ -143,6 +151,11 @@ process.pvCount = cms.EDFilter("EDPileupAna",
                                src = cms.InputTag("goodOfflinePrimaryVertices")
                                )
                                
+
+###############################
+####### PF Candidates #########
+###############################
+
 
 # Write out the ntuples of the jets and other relevant info
 process.pfLite = cms.EDProducer(
