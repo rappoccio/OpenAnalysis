@@ -1,0 +1,11 @@
+<use   name="root"/>
+<use   name="boost"/>
+<use   name="fastjet"/>
+<use   name="rootcintex"/>
+<use   name="FWCore/FWLite"/>
+<use   name="DataFormats/FWLite"/>
+<use   name="PhysicsTools/FWLite"/>
+<use   name="CondFormats/JetMETObjects"/>
+<environment>
+  <bin   file="ana.cc"></bin>
+</environment>

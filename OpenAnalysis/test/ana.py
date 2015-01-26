@@ -294,7 +294,7 @@ for ifile in files :
             print 'event passed : index = {0:6.0f} prescale = {1:6.0f}, nvtx = {2:6.0f}, rho = {3:6.2f}'.format( iTrigHist, prescale, nvtx, rho  )
 
 
-        #pfPseudoJets = sj.SJ.JetCollection()
+        pfPseudoJets = sj.SJ.JetCollection()
 
         event.getByLabel( pfPxLabel, pfPxHandle )
         event.getByLabel( pfPyLabel, pfPyHandle )
@@ -312,7 +312,7 @@ for ifile in files :
             pfPz = pfPzs[ijet]
             pfE  = pfEnergys[ijet]
             ipf =  sj.SJ.Jet( pfPx, pfPy, pfPz, pfE, ijet )
-            #pfPseudoJets.push_back( ipf )
+            pfPseudoJets.push_back( ipf )
 
             if options.verbose : 
                 print 'ipf  = {0:6.0f} : pt={1:6.2f},y={2:6.2f},phi={3:6.2f},m={4:6.2f}'.format( ijet, jet.pt(), jet.rap(), jet.phi(), jet.m() )
