@@ -40,13 +40,13 @@ int main(int argc, char* argv[])
   // ----------------------------------------------------------------------
   std::cout << "Setting up JetCorrectorParameters." << std::endl;
   std::cout << "L2L3 res:" << std::endl;
-  JetCorrectorParameters ResJetPar ("JECFiles/GR_R_42_V24_AK5PF_L2L3Residual.txt"); 
+  JetCorrectorParameters ResJetPar ("JECFiles/GR_R_41_V0_AK5PF_L2L3Residual.txt"); 
   std::cout << "L3 res:" << std::endl;
-  JetCorrectorParameters L3JetPar  ("JECFiles/GR_R_42_V24_AK5PF_L3Absolute.txt");
+  JetCorrectorParameters L3JetPar  ("JECFiles/GR_R_41_V0_AK5PF_L3Absolute.txt");
   std::cout << "L2 res:" << std::endl;
-  JetCorrectorParameters L2JetPar  ("JECFiles/GR_R_42_V24_AK5PF_L2Relative.txt");
+  JetCorrectorParameters L2JetPar  ("JECFiles/GR_R_41_V0_AK5PF_L2Relative.txt");
   std::cout << "L1 res:" << std::endl;
-  JetCorrectorParameters L1JetPar  ("JECFiles/GR_R_42_V24_AK5PF_L1FastJet.txt");
+  JetCorrectorParameters L1JetPar  ("JECFiles/GR_R_41_V0_AK5PF_L1FastJet.txt");
   std::cout << "done with JetCorrectorParameters" << std::endl;
   // ----------------------------------------------------------------------
   //  Load the JetCorrectorParameter objects into a vector, IMPORTANT: THE ORDER MATTERS HERE !!!! 
